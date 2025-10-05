@@ -121,7 +121,9 @@
       "SlashCommand(/update-context:*)",
       "SlashCommand(/validate-prp-system:*)",
       "SlashCommand(/analyze-codebase:*)",
-      "SlashCommand(/init-context-engineering:*)"
+      "SlashCommand(/init-context-engineering:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []
