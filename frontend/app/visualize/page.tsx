@@ -2,6 +2,13 @@
 
 import { useState } from 'react'
 import MoleculeViewer from '@/components/MoleculeViewer'
+import { client } from '@/api/client.gen'
+import { convertMoleculeApiMoleculesConvertPost } from '@/api/sdk.gen'
+
+// Configure API client
+client.setConfig({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+})
 
 export default function VisualizePage() {
   const [smiles, setSmiles] = useState('c1ccccc1') // Benzene as default
@@ -19,30 +26,23 @@ export default function VisualizePage() {
     setError('')
 
     try {
-      // In Phase 3, this will call the backend API
-      // For now, we'll use a hardcoded benzene PDB
-      const benzenePDB = `COMPND    benzene
-HETATM    1  C   UNL     1       1.200   0.000   0.000  1.00  0.00           C
-HETATM    2  C   UNL     1       0.600   1.039   0.000  1.00  0.00           C
-HETATM    3  C   UNL     1      -0.600   1.039   0.000  1.00  0.00           C
-HETATM    4  C   UNL     1      -1.200   0.000   0.000  1.00  0.00           C
-HETATM    5  C   UNL     1      -0.600  -1.039   0.000  1.00  0.00           C
-HETATM    6  C   UNL     1       0.600  -1.039   0.000  1.00  0.00           C
-HETATM    7  H   UNL     1       2.130   0.000   0.000  1.00  0.00           H
-HETATM    8  H   UNL     1       1.065   1.845   0.000  1.00  0.00           H
-HETATM    9  H   UNL     1      -1.065   1.845   0.000  1.00  0.00           H
-HETATM   10  H   UNL     1      -2.130   0.000   0.000  1.00  0.00           H
-HETATM   11  H   UNL     1      -1.065  -1.845   0.000  1.00  0.00           H
-HETATM   12  H   UNL     1       1.065  -1.845   0.000  1.00  0.00           H
-CONECT    1    2    6    7
-CONECT    2    1    3    8
-CONECT    3    2    4    9
-CONECT    4    3    5   10
-CONECT    5    4    6   11
-CONECT    6    1    5   12
-END`
+      const { data, error: apiError } = await convertMoleculeApiMoleculesConvertPost({
+        body: {
+          input_format: 'smiles',
+          output_format: 'pdb',
+          data: smiles
+        }
+      })
 
-      setPdbData(benzenePDB)
+      if (apiError) {
+        throw new Error(apiError.detail || 'Conversion failed')
+      }
+
+      if (!data) {
+        throw new Error('No data returned from API')
+      }
+
+      setPdbData(data.data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to visualize molecule')
     } finally {
