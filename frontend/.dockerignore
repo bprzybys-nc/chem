@@ -1,0 +1,19 @@
+node_modules
+.next
+out
+.turbo
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+.git
+.gitignore
+README.md
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.DS_Store
+
+# Exclude old generated API files (we generate fresh in Dockerfile)
+src/api/
+api/

@@ -35,7 +35,10 @@ export default function VisualizePage() {
       })
 
       if (apiError) {
-        throw new Error(apiError.detail || 'Conversion failed')
+        const errorMsg = Array.isArray(apiError.detail)
+          ? apiError.detail.map(e => e.msg).join(', ')
+          : 'Conversion failed'
+        throw new Error(errorMsg)
       }
 
       if (!data) {
